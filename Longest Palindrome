@@ -1,0 +1,62 @@
+409. Longest Palindrome
+Solved
+Easy
+Topics
+Companies
+Given a string s which consists of lowercase or uppercase letters, return the length of the longest 
+palindrome
+ that can be built with those letters.
+
+Letters are case sensitive, for example, "Aa" is not considered a palindrome.
+
+ 
+
+Example 1:
+
+Input: s = "abccccdd"
+Output: 7
+Explanation: One longest palindrome that can be built is "dccaccd", whose length is 7.
+Example 2:
+
+Input: s = "a"
+Output: 1
+Explanation: The longest palindrome that can be built is "a", whose length is 1.
+ 
+
+Constraints:
+
+1 <= s.length <= 2000
+s consists of lowercase and/or uppercase English letters only.
+
+solution:
+class Solution {
+public:
+    int longestPalindrome(string s) {
+        int n=s.length();
+        unordered_map<char,int> m;
+        for(int i=0;i<n;i++)
+        {
+            m[s[i]]++;
+        }
+        int cnt=0;
+        bool flag=false;
+
+        for(auto p :m)
+        {
+            if(p.second%2==0)
+            {
+                cnt+=p.second;
+            }
+            else
+            {
+                flag=true;
+                cnt+=p.second-1;
+
+            }
+        }
+        if(flag )
+            return cnt+1;
+        else
+            return cnt;       
+    }
+};
