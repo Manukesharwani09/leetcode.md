@@ -1,0 +1,148 @@
+648. Replace Words
+In English, we have a concept called root, which can be followed by some other word to form another longer word - let's call this word derivative. For example, when the root "help" is followed by the word "ful", we can form a derivative "helpful".
+
+Given a dictionary consisting of many roots and a sentence consisting of words separated by spaces, replace all the derivatives in the sentence with the root forming it. If a derivative can be replaced by more than one root, replace it with the root that has the shortest length.
+
+Return the sentence after the replacement.
+
+ 
+
+Example 1:
+
+Input: dictionary = ["cat","bat","rat"], sentence = "the cattle was rattled by the battery"
+Output: "the cat was rat by the bat"
+Example 2:
+
+Input: dictionary = ["a","b","c"], sentence = "aadsfasf absbs bbab cadsfafs"
+Output: "a a b c"
+ 
+
+Constraints:
+
+1 <= dictionary.length <= 1000
+1 <= dictionary[i].length <= 100
+dictionary[i] consists of only lower-case letters.
+1 <= sentence.length <= 106
+sentence consists of only lower-case letters and spaces.
+The number of words in sentence is in the range [1, 1000]
+The length of each word in sentence is in the range [1, 1000]
+Every two consecutive words in sentence will be separated by exactly one space.
+sentence does not have leading or trailing spaces
+
+solution:
+using hash map
+class Solution {
+public:
+    string replaceWords(vector<string>& dictionary, string sentence) {
+
+        int n=sentence.length();
+        string word,ans;
+        unordered_set<string> m(dictionary.begin(), dictionary.end());
+        for(int i=0;i<n;i++)
+        {
+            if(sentence[i]==' ')
+            {
+                // chec for word
+                 ans.push_back(sentence[i]);
+                word="";
+            }
+            else
+            {
+                word.push_back(sentence[i]);
+                if(m.find(word)!=m.end())
+                {
+                    // now push the i to next space
+                    ans.append(word);
+                    while(sentence[i]!=' ' && i<n)
+                    {
+                        i++;
+                    }
+                    i--;
+                }
+                else if(i==n-1 || sentence[i+1]==' ' )
+                {
+                    ans.append(word);
+                    word="";
+
+                }
+            }
+        }
+        return ans;
+        
+    }
+};
+
+using triee
+class Trienode{
+    public:
+    unordered_map<char,Trienode*> child;
+    bool end;
+    Trienode():end(false){}
+};
+
+class trie {
+    private:
+    Trienode  *root;
+    public:
+    trie()
+    {
+        root=new Trienode();
+    }
+     void insert(string& word) {
+        Trienode* node = root;
+        for (char c : word) {
+            if (node->child.find(c) == node->child.end()) {
+                node->child[c] = new Trienode();
+            }
+            node = node->child[c];
+        }
+        node->end= true;
+    }
+    string search_shortest_prefix(string& word) {
+        Trienode* node = root;
+        string prefix;
+        for (char c : word) {
+            if (node->child.find(c) == node->child.end()) {
+                return "";
+            }
+            node = node->child[c];
+            prefix += c;
+            if (node->end ){
+                return prefix;
+            }
+        }
+        return "";
+    }
+
+};
+
+
+class Solution {
+public:
+    string replaceWords(vector<string>& dictionary, string sentence) {
+
+        int n=sentence.length();
+        trie t;
+         for (string& word : dictionary) {
+            t.insert(word);
+        }
+        string word,result;
+        istringstream iss(sentence);
+         while (iss >> word) { 
+            string prefix = t.search_shortest_prefix(word);
+            if (!prefix.empty()) {
+                result += prefix + " ";
+            } else {
+                result += word + " ";
+            }
+        }
+
+        // Remove the trailing space if any
+        if (!result.empty() && result.back() == ' ') {
+            result.pop_back();
+        }
+
+        return result;
+        
+    }
+};
