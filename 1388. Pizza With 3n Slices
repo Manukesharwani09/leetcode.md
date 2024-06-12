@@ -1,0 +1,141 @@
+1388. Pizza With 3n Slices
+There is a pizza with 3n slices of varying size, you and your friends will take slices of pizza as follows:
+
+You will pick any pizza slice.
+Your friend Alice will pick the next slice in the anti-clockwise direction of your pick.
+Your friend Bob will pick the next slice in the clockwise direction of your pick.
+Repeat until there are no more slices of pizzas.
+Given an integer array slices that represent the sizes of the pizza slices in a clockwise direction, return the maximum possible sum of slice sizes that you can pick.
+
+ 
+
+Example 1:
+
+
+Input: slices = [1,2,3,4,5,6]
+Output: 10
+Explanation: Pick pizza slice of size 4, Alice and Bob will pick slices with size 3 and 5 respectively. Then Pick slices with size 6, finally Alice and Bob will pick slice of size 2 and 1 respectively. Total = 4 + 6.
+Example 2:
+
+
+Input: slices = [8,9,8,6,1,1]
+Output: 16
+Explanation: Pick pizza slice of size 8 in each turn. If you pick slice with size 9 your partners will pick slices of size 8.
+ 
+
+Constraints:
+
+3 * n == slices.length
+1 <= slices.length <= 500
+1 <= slices[i] <= 1000
+
+solution:
+class Solution {
+public:
+
+int rec(vector<int>& slices,int index,int n,int endindex,vector <vector <int>>& dp)
+{
+    if(n==0 || index>endindex)
+    {
+        return 0;
+    }
+    if(dp[index][n]!=-1)
+    {
+        return dp[index][n];
+    }
+
+    int sum=slices[index]+rec(slices,index+2,n-1,endindex,dp);
+    int nsum=0+rec(slices,index+1,n,endindex,dp);
+    dp[index][n]=max(sum,nsum);
+
+    return dp[index][n];
+}
+
+int tab(vector<int>& slices)
+{
+    int k=slices.size();
+    vector <vector <int>> dp1(k+2,vector <int> (k+2,0));
+    vector <vector <int>> dp2(k+2,vector <int> (k+2,0));
+
+    for(int index=k-2;index>=0;index--)
+    {
+        for(int n=1;n<=k/3;n++)
+        {
+            int sum=slices[index]+dp1[index+2][n-1];
+            int nsum=dp1[index+1][n];
+            dp1[index][n]=max(sum,nsum);
+        }
+
+    }
+    int case1=dp1[0][k/3];
+
+    for(int index=k-1;index>=1;index--)
+    {
+        for(int n=1;n<=k/3;n++)
+        {
+            int sum=slices[index]+dp2[index+2][n-1];
+            int nsum=dp2[index+1][n];
+            dp2[index][n]=max(sum,nsum);
+        }
+        
+    }
+    int case2=dp2[1][k/3];
+    return max(case1,case2);
+    
+}
+
+int space(vector<int>& slices)
+{
+    int k=slices.size();
+    vector <int> prev1(k+2,0);
+    vector <int> curr1(k+2,0);
+    vector <int> next1(k+2,0);
+    vector <int> prev2(k+2,0);
+    vector <int> curr2(k+2,0);
+    vector <int> next2(k+2,0);
+
+    for(int index=k-2;index>=0;index--)
+    {
+        for(int n=1;n<=k/3;n++)
+        {
+            int sum=slices[index]+next1[n-1];
+            int nsum=curr1[n];
+            prev1[n]=max(sum,nsum);
+        }
+        next1=curr1;
+        curr1=prev1;
+
+    }
+    int case1=curr1[k/3];
+
+    for(int index=k-1;index>=1;index--)
+    {
+        for(int n=1;n<=k/3;n++)
+        {
+             int sum=slices[index]+next2[n-1];
+            int nsum=curr2[n];
+            prev2[n]=max(sum,nsum);
+        }
+        next2=curr2;
+        curr2=prev2;
+        
+    }
+    int case2=curr2[k/3];
+    return max(case1,case2);
+    
+}
+    int maxSizeSlices(vector<int>& slices) {
+
+        // int k=slices.size();
+
+        // int case1=rec(slices,0,k/3,k-2);
+        // int case2=rec(slices,1,k/3,k-1);
+
+        // return max(case1,case2);
+        
+                
+        // return tab(slices);
+
+        return space(slices);
+    }
+};
