@@ -1,0 +1,48 @@
+633. Sum of Square Numbers
+Given a non-negative integer c, decide whether there're two integers a and b such that a2 + b2 = c.
+
+Example 1:
+
+Input: c = 5
+Output: true
+Explanation: 1 * 1 + 2 * 2 = 5
+Example 2:
+
+Input: c = 3
+Output: false
+
+Constraints:
+
+0 <= c <= 231 - 1
+
+solution:
+class Solution {
+public:
+
+
+    bool judgeSquareSum(int c) {
+        
+        long long int a=0;
+        long long int b=sqrt(c);
+
+
+        while(a<=b)
+        {
+            long long temp=a*a+b*b;
+            if(temp==c)
+            {
+                return true;
+            }
+            else if(temp<c)
+            {
+                a++;
+            }
+            else
+            {
+                b--;
+            }
+        }
+        return false;
+       
+    }
+};
